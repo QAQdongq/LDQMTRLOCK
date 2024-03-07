@@ -1,0 +1,2 @@
+# LDQMTRLOCK
+密码锁规约
