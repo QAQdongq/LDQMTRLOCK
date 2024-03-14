@@ -50,6 +50,10 @@ int ConverterUtil::cmdTypeStrToInt(const std::string &cmdType)
     {
         return CMD_TYPE_WF;
     }
+    else if(CMD_TYPE_STR_SetPasswordReg == cmdType)
+    {
+        return CMD_TYPE_SetPasswordReg;
+    }
     else
     {
         return INVALID_CMDTYPE;
@@ -856,6 +860,13 @@ std::shared_ptr<BaseCmdData_S> ConverterUtil::toCmdData(const QString &code, con
             cmdData->param.push_back(spParam);
         }
         return cmdData;
+    }
+    //ldq20240307在此处解析json数据为byte
+    if(QString::fromStdString(CMD_TYPE_STR_SetPasswordReg) == code)
+    {
+
+
+
     }
 
     return nullptr;

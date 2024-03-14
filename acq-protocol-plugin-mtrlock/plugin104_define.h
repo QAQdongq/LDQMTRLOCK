@@ -110,6 +110,8 @@ static const std::string CMD_TYPE_STR_SPRESULT = CODE_SETRSP;//"SetRsp";//设置
 static const std::string CMD_TYPE_STR_CALLDD = CODE_CALLDDREQ;//"CallDDReq";//总召电度（脉冲）
 static const std::string CMD_TYPE_STR_CALLDDEND = CODE_CALLDDRSP;//"CallDDRsp";//总召电度（脉冲）应答（结束）
 
+static const std::string CMD_TYPE_STR_SetPasswordReg = CODE_SetPasswordReg;//"SetPasswordReg";//密码锁下发密码命令
+
 //遥控结果, 1:成功； -1：超时；-2：其他原因
 typedef enum
 {

@@ -279,11 +279,14 @@ void AcqProtocolSession::sendCmdData(const QVariantHash &data)
     if(INVALID_CMDTYPE == cmdType)
     {
         errMsg =QString("Invalid cmdType! cmdType:%1").arg(cmdType);
-        LOG_ERROR(m_cchId, errMsg);
+        LOG_DEBUG(m_cchId, errMsg);
         return;
     }
     std::list<COMMAND> cmdList;
     bool ret = false;
+
+    //ldq测试
+    //LOG_ERROR(m_cchId, cmdType);
     switch(cmdType)
     {
         case CMD_TYPE_YX://遥信
@@ -343,6 +346,15 @@ void AcqProtocolSession::sendCmdData(const QVariantHash &data)
         {
             std::shared_ptr<BaseCmdData_S> cmdData = ConverterUtil::toCmdData(QString::fromStdString(CMD_TYPE_STR_SP), data);
             ret = CommandUtil::makeSPCmd(this->m_protoconfig.pTaskList, cmdData, cmdList, errMsg);
+            break;
+        }
+        case CMD_TYPE_SetPasswordReg://如果json中标志为SetPasswordReg
+        {
+            //LOG_ERROR(m_cchId, codeStr);
+            //1、将json结构体转成预定义的结构体
+            std::shared_ptr<BaseCmdData_S> cmdData = ConverterUtil::toCmdData(QString::fromStdString(CMD_TYPE_STR_SetPasswordReg), data);
+            //2、将结构体加入到队列中
+            ret = CommandUtil::makeLalalaCmd(cmdData, cmdList, errMsg);
             break;
         }
         default:

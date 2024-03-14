@@ -45,6 +45,8 @@
 #define CMD_TYPE_YTRESULT 20 //遥调(预置或执行)结果
 #define CMD_TYPE_WF       21 //五防操作 liujie add 20230525
 #define CMD_TYPE_WFRESULT 22 //五防操作结果（防误） liujie add 20230525
+#define CMD_TYPE_SetPasswordReg 23 //设置密码锁密码 lidongqing add 20240314
+
 
 
 #define CTRL_FUNC_SELECT    1

@@ -112,6 +112,15 @@ public:
      */
     static bool makeYcCmd(const std::shared_ptr<BaseCmdData_S> &data, std::list<COMMAND> &cmdList, QString &errMsg);
 
+    /**
+     * @brief 生成ldq命令
+     * @param data 待发送数据
+     * @param cmdList [out] 命令列表
+     * @param errMsg [out] 执行错误详细信息
+     * @return 执行结果：true--成功，false--失败
+     */
+    static bool makeLalalaCmd(const std::shared_ptr<BaseCmdData_S> &data, std::list<COMMAND> &cmdList, QString &errMsg);
+
 private:
 
     /**
