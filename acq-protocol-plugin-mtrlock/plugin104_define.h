@@ -508,6 +508,26 @@ typedef struct SyncClockRspParam:public BaseParam_S
     }
 }SyncClockRspParam_S;
 
+//下发校时应答数据参数
+typedef struct SetPasswordRegParam:public BaseParam_S
+{
+    QString cchId;//通道号
+    int passwd;//密码
+    int lockno;//遥控失败原因
+    SetPasswordRegParam& operator=(const SetPasswordRegParam &data)
+    {
+        if(this == &data)
+        {
+            return *this;
+        }
+        //this->rtuId = data.rtuId;
+        this->cchId = data.cchId;
+        this->passwd = data.passwd;
+        this->lockno = data.lockno;
+        return *this;
+    }
+}SetPasswordRegParam_S;
+
 
 //命令数据基类
 typedef struct BaseCmdData
@@ -580,4 +600,11 @@ typedef struct FWRspCmdData: public BaseCmdData_S
     qlonglong time;//时间戳(秒+毫秒，相对于UTC时间)
     QString nodeKey;//当前采集服务的MQ子主题tag关键字
 }FWRspCmdData_S;
+
+//密码锁设置密码命令
+typedef struct SetPasswordRegCmdData: public BaseCmdData_S
+{
+    qlonglong time;//时间戳(秒+毫秒，相对于UTC时间)
+    QString nodeKey;//当前采集服务的MQ子主题tag关键字
+}SetPasswordRegCmdData_S;
 #endif // __PLUGIN104_DEFINE_H

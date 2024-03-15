@@ -350,11 +350,12 @@ void AcqProtocolSession::sendCmdData(const QVariantHash &data)
         }
         case CMD_TYPE_SetPasswordReg://如果json中标志为SetPasswordReg
         {
-            //LOG_ERROR(m_cchId, codeStr);
+
             //1、将json结构体转成预定义的结构体
             std::shared_ptr<BaseCmdData_S> cmdData = ConverterUtil::toCmdData(QString::fromStdString(CMD_TYPE_STR_SetPasswordReg), data);
+            //LOG_DEBUG(m_cchId, cmdData.param[0].to);
             //2、将结构体加入到队列中
-            ret = CommandUtil::makeLalalaCmd(cmdData, cmdList, errMsg);
+            ret = CommandUtil::makeSetPasswordRegCmd(cmdData, cmdList, errMsg);
             break;
         }
         default:

@@ -335,7 +335,7 @@ bool CommandUtil::makeYxYcCmd(int cmdType, const std::shared_ptr<BaseCmdData_S> 
  * @param errMsg [out] 执行错误详细信息
  * @return 执行结果：true--成功，false--失败
  */
-bool CommandUtil::makeLalalaCmd(const std::shared_ptr<BaseCmdData_S> &data, std::list<COMMAND> &cmdList, QString &errMsg)
+bool CommandUtil::makeSetPasswordRegCmd(const std::shared_ptr<BaseCmdData_S> &data, std::list<COMMAND> &cmdList, QString &errMsg)
 {
     //在此处生成一个command对象并cmdList.push_back(command);
 
