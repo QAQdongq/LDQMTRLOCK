@@ -600,6 +600,9 @@ int Iec104::App_SendCommand(COMMAND *command )
     case CMD_TYPE_WF://liujie add 添加五防操作
         ret = App_SendWFJS(command );
         break;
+    case CMD_TYPE_SetPasswordReg://ldq add 添加添加设置密码锁密码命令
+        ret = App_SetPasswordReg(command );
+        break;
     case CMD_TYPE_YK:
         if( Config_Param.YKCmdMode == 1 )
             ret = App_SendYk45(command );
@@ -1268,6 +1271,53 @@ int Iec104::App_SendWFJS(COMMAND *command )
     return 1;
 }
 
+int Iec104::App_SetPasswordReg(COMMAND *command )
+{
+    if(command->dataList.size() != 1) //一次只能发送一个遥控命令，因为遥控需要确认；所以下发时只能一个一个下发
+    {
+        LOG_ERROR(pRouteInf->GetChnId(), "Only can send one yk command at one time!");
+        return -1;
+    }
+    std::shared_ptr<SetPasswordRegParam_S> data = std::static_pointer_cast<SetPasswordRegParam_S>(command->dataList.front());
+    int rtuAddr = pRouteInf->GetRtuAddr();//pRtuInf->GetRtuAddr(data->rtuId);
+    //LOG_DEBUG(pRouteInf->GetChnId(), QString("Iec104::App_SendYk45: rtuId=%1, App_Layer.State=%2, functionCode=%3").arg(data->rtuId).arg(App_Layer.State).arg(functionCode));
+
+    uint8 buf[19],i,j;
+    i = 2;
+    buf[0] = APPTYPE_YK46;
+    buf[1] = 0x01;
+    buf[2] = 0x01;
+    buf[3] = 0x01;
+    buf[4] = 0x01;
+    buf[5] = 0x01;
+    buf[6] = 0x01;
+    buf[7] = 0x01;
+    buf[8] = 0x01;
+    buf[9] = 0x01;
+    buf[10] = 0x01;
+    buf[11] = 0x01;
+    buf[12] = 0x01;
+    buf[13] = 0x01;
+    buf[14] = 0x01;
+    buf[15] = 0x01;
+    buf[16] = 0x01;
+    buf[17] = 0x01;
+    buf[18] = 0x01;
+
+
+    if( App_SendAppIFormat( buf, i ) == 1 )
+    {
+       //App_Layer.CtrlNo = ptAddress;
+       //App_Layer.CtrlAttr = ctrlType;
+       //App_Layer.CtrlType = functionCode;
+       //App_Layer.State = IEC104_APP_STATE_WAITYKCONF;
+       //App_Layer.taskId= command->taskId;
+       AckFinished = 0;
+       LOG_DEBUG(pRouteInf->GetChnId(), QString("Iec104::App_SendYk45: success! ChnId=%1, rtuId=%2\n").arg(pRouteInf->GetChnId()).arg(data->rtuId));
+       return 1;
+    }
+    return -1;
+}
 
 int Iec104::App_SendYt47(COMMAND *command )
 {

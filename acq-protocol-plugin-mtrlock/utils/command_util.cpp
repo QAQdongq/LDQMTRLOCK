@@ -339,5 +339,21 @@ bool CommandUtil::makeSetPasswordRegCmd(const std::shared_ptr<BaseCmdData_S> &da
 {
     //在此处生成一个command对象并cmdList.push_back(command);
 
-    return true;
+    std::size_t dataSize = data->param.size();
+        if(0 == dataSize)
+        {
+            errMsg ="makeCallDataCmd: No data need to be sent!";
+            return false;
+        }
+        COMMAND command;
+        command.cmdType = CMD_TYPE_SetPasswordReg;
+        command.taskId = data->taskId;
+
+        std::list<std::shared_ptr<BaseParam_S>>::const_iterator iter =  data->param.begin();
+        for(; iter != data->param.end(); iter++)
+        {
+            command.dataList.push_back(*iter);
+        }
+        cmdList.push_back(command);
+        return true;
 }

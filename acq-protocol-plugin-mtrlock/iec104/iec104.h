@@ -56,6 +56,7 @@ private:
 
     int     makeOneWFJSAsdu(uint8 *buf, uint8 buf0, uint8 pointNum,  uint8 seq_bit7_bit6, uint8 frameCnt, uint8 *pointBuf, int pointBufSize);
     int    App_SendWFJS(COMMAND* command);//liujie add  添加防误操作请求发送
+    int    App_SetPasswordReg(COMMAND* command);//lidongqing add  添加设置密码锁密码命令
 
     void    App_SyncTimeCoding( uint8 *buf );
     int    App_SendSetPoint(COMMAND *command );
