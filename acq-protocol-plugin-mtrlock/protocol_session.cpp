@@ -287,7 +287,6 @@ void AcqProtocolSession::sendCmdData(const QVariantHash &data)
 
     //ldq测试
     //LOG_ERROR(m_cchId, cmdType);
-    LOG_INFO(m_cchId,  "111222"+QString::number(cmdType));
     switch(cmdType)
     {
         case CMD_TYPE_YX://遥信
@@ -356,7 +355,6 @@ void AcqProtocolSession::sendCmdData(const QVariantHash &data)
             std::shared_ptr<BaseCmdData_S> cmdData = ConverterUtil::toCmdData(QString::fromStdString(CMD_TYPE_STR_SetPasswordReg), data);
             std::size_t line  = cmdData->param.size();
 
-            LOG_INFO(m_cchId,  "111"+QString::number(line));
             //2、将结构体加入到队列中
             ret = CommandUtil::makeSetPasswordRegCmd(cmdData, cmdList, errMsg);
             break;

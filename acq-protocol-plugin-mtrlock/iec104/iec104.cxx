@@ -1273,50 +1273,63 @@ int Iec104::App_SendWFJS(COMMAND *command )
 
 int Iec104::App_SetPasswordReg(COMMAND *command )
 {
-    if(command->dataList.size() != 1) //一次只能发送一个遥控命令，因为遥控需要确认；所以下发时只能一个一个下发
-    {
-        LOG_ERROR(pRouteInf->GetChnId(), "Only can send one yk command at one time!");
-        return -1;
-    }
+    LOG_INFO(pRouteInf->GetChnId(),  "App_SetPasswordReg执行中：将json中内容转成字节流");
+
     std::shared_ptr<SetPasswordRegParam_S> data = std::static_pointer_cast<SetPasswordRegParam_S>(command->dataList.front());
+    LOG_INFO(pRouteInf->GetChnId(), "密码"+QString::number(data->passwd));//后续不打印ldq
+    LOG_INFO(pRouteInf->GetChnId(),  "锁号"+QString::number(data->lockno));
+
     int rtuAddr = pRouteInf->GetRtuAddr();//pRtuInf->GetRtuAddr(data->rtuId);
     //LOG_DEBUG(pRouteInf->GetChnId(), QString("Iec104::App_SendYk45: rtuId=%1, App_Layer.State=%2, functionCode=%3").arg(data->rtuId).arg(App_Layer.State).arg(functionCode));
 
     uint8 buf[19],i,j;
     i = 2;
-    buf[0] = APPTYPE_YK46;
-    buf[1] = 0x01;
-    buf[2] = 0x01;
-    buf[3] = 0x01;
-    buf[4] = 0x01;
-    buf[5] = 0x01;
-    buf[6] = 0x01;
+    //同步头
+    buf[0] = 0x68;
+
+    //长度
+    buf[1] = 0x11;
+
+    //控制域4位
+    buf[2] = 0x6A;
+    buf[3] = 0x03;
+    buf[4] = 0x1A;
+    buf[5] = 0x09;
+
+    //类型标识码
+    buf[6] = 0x33;
+
+    //可变结构限定词
     buf[7] = 0x01;
-    buf[8] = 0x01;
-    buf[9] = 0x01;
+
+    //6:表示向设备设置密码信息过程
+    buf[8] = 0x06;
+
+    //默认为0
+    buf[9] = 0x00;
+
+    //1：表示通讯机地址。（低位前，高位后）
     buf[10] = 0x01;
-    buf[11] = 0x01;
-    buf[12] = 0x01;
-    buf[13] = 0x01;
-    buf[14] = 0x01;
-    buf[15] = 0x01;
-    buf[16] = 0x01;
-    buf[17] = 0x01;
-    buf[18] = 0x01;
+    buf[11] = 0x00;
+
+    //代表锁的编号（81 0B 00 作为锁具基地址 2945 开始）（低位前，高位后
+    buf[12] = data->lockno & 0xFF;// 获取最低字节;
+    buf[13] = (data->lockno >> 8) & 0xFF;  // 获取中间字节
+    buf[14] = (data->lockno >> 16) & 0xFF; // 获取最高字节
+
+    //四个字节表示密码信息。（低位前，高位后）密码最大值应小于268435455
+    buf[15] = data->passwd & 0xFF;// 获取最低字节;
+    buf[16] = (data->passwd >> 8) & 0xFF;  // 获取2字节
+    buf[17] = (data->passwd >> 16) & 0xFF; // 获取3字节
+    buf[18] = (data->passwd >> 24) & 0xFF; // 获取最高字节
+    //设置字节最高4位，代表一些属性
+    buf[18] = buf[18]+0x70;
+
+    AddNeedSendFrame( buf, 19 );
+    LOG_INFO(pRouteInf->GetChnId(),  "已发送密码信息命令设置");
 
 
-    if( App_SendAppIFormat( buf, i ) == 1 )
-    {
-       //App_Layer.CtrlNo = ptAddress;
-       //App_Layer.CtrlAttr = ctrlType;
-       //App_Layer.CtrlType = functionCode;
-       //App_Layer.State = IEC104_APP_STATE_WAITYKCONF;
-       //App_Layer.taskId= command->taskId;
-       AckFinished = 0;
-       LOG_DEBUG(pRouteInf->GetChnId(), QString("Iec104::App_SendYk45: success! ChnId=%1, rtuId=%2\n").arg(pRouteInf->GetChnId()).arg(data->rtuId));
-       return 1;
-    }
-    return -1;
+    return 1;
 }
 
 int Iec104::App_SendYt47(COMMAND *command )
@@ -1975,6 +1988,11 @@ int Iec104::App_CallGrpData(int rtuAddr, int group )
     return -1;
 #endif
 }
+
+
+
+
+
 
 /********************************************************************************
 *
