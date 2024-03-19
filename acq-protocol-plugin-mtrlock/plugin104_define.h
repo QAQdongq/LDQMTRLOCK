@@ -254,6 +254,43 @@ typedef struct YKReqParam:public BaseParam_S
 }YKReqParam_S;
 
 
+//密码信息命令设置反馈参数
+typedef struct SetPasswordReqParam:public BaseParam_S
+{
+
+    QString cchId;//通道号
+    int passwd;//密码
+    int lockno;//锁号
+    int value;//结果1表示成功，0表示失败
+    QString message;//错误码及原因
+
+    SetPasswordReqParam()
+    {
+        cchId="";
+        passwd=0;
+        lockno=0;
+        value=0;
+        message="";
+    }
+    SetPasswordReqParam& operator=(const SetPasswordReqParam &data)
+    {
+        if(this == &data)
+        {
+            return *this;
+        }
+        this->rtuId = data.rtuId;
+        this->cchId = data.cchId;
+        this->passwd = data.passwd;
+        this->lockno = data.lockno;
+        this->value = data.value;
+        this->message = data.message;
+        return *this;
+    }
+}SetPasswordReqParam_S;
+
+
+
+
 //遥控[或遥调]应答数据参数
 typedef struct YKRspParam:public BaseParam_S
 {

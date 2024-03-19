@@ -88,6 +88,13 @@ public:
     static QVariantHash toYKReqHash(const YKReqParam_S &data);
 
     /**
+     * @brief 生成密码信息命令设置反馈交互数据
+     * @param data 参数数据
+     * @return 交互数据
+     */
+    static QVariantHash toSetPasswordHash(const SetPasswordReqParam_S &data);
+
+    /**
      * @brief 生成遥控应答交互数据
      * @param cmdType 命令类型
      * @param data 参数数据

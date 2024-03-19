@@ -569,6 +569,24 @@ void SCN_RawdataDb::SendCmdYk(const YKReqParam_S &data)
 }
 
 /**
+ * @brief 上送密码信息命令设置反馈到上层应用
+ */
+void SCN_RawdataDb::SendSetPassword(const SetPasswordReqParam_S &data)
+{
+    //std::string dataListStr = StringUtil::toString("{\"rtuAddr\":%d,\"pointAddr\":%d,\"ykCmd\":%d,\"value\":\"%s\"}",data.rtuAddr,data.pointAddr,data.ykCmd,data.value.c_str());//rtuAddr--RTU地址(公共地址码)；pointAddr--遥控点地址(序号+遥控基地址（不确定是否要+基地址？）)；value--RTU遥控状态(0-分，1-合）
+    //std::string dataJson = MakeSendDataJson(CMD_TYPE_STR_YK, this->m_source, dataListStr);
+    LOG_INFO(this->m_chnId,QString::number(data.lockno));
+
+    QVariantHash dataHash = ConverterUtil::toSetPasswordHash(data);
+
+    if(m_protoInterface)
+    {
+        m_protoInterface->sendToGatewayByMq(dataHash);//通过MQ上送
+    }
+}
+
+
+/**
  * @brief 设置所连接的设备IP和端口(发送源头端)
  * @param source 所连接的设备IP和端口
  */

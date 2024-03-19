@@ -81,6 +81,11 @@ public:
     virtual void SendCmdYk(const YKReqParam_S &data);
 
     /**
+    * @brief 上送密码信息命令设置反馈到上层应用
+    */
+    virtual void SendSetPassword(const SetPasswordReqParam_S &data);
+
+    /**
      * @brief 设置所连接的设备IP和端口(发送源头端)
      * @param source 所连接的设备IP和端口
      */

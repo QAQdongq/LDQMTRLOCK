@@ -400,6 +400,50 @@ QVariantHash ConverterUtil::toYKReqHash(const YKReqParam_S &data)
 }
 
 /**
+ * @brief 生成密码信息命令设置反馈交互数据
+ * @param data 参数数据
+ * @return 交互数据
+ */
+static QVariantHash toSetPasswordHash(const SetPasswordReqParam_S &data)
+{
+    /*样例：
+        {
+        "code":"SetPasswordRegReq",                    //
+        "time":"1630564973670",            //当前命令生成的时间点(毫秒)
+        "nodeKey":"192.168.80.100:1",        //当前采集服务的MQ子主题tag关键字
+        "data":[                        //遥控数据
+        {
+        "rtuId":1,
+        "cchId":1,          // 通道ID
+        "passwd":1,             // 密码
+        "lockno":0,          // 锁号
+        "value":1,            // 结果
+        "message":""          //错误码+内容
+        }
+        ]
+        }
+
+     */
+    QVariantHash dataHash;
+    dataHash.insert(KEY_CODE, QString::fromStdString(CMD_TYPE_STR_SetPasswordReg));//信息命令设置反馈
+    dataHash.insert(KEY_TIME, QDateTime::currentMSecsSinceEpoch());
+    dataHash.insert(KEY_NODEKEY, "");
+    QVariantList paramList;
+    QVariantHash oneParam;
+    oneParam.insert(KEY_RTUID, data.rtuId);
+    oneParam.insert(KEY_CHNID, data.cchId);
+    oneParam.insert(KEY_PASSWD, data.passwd);
+    oneParam.insert(KEY_LOCKNO, data.lockno);
+    oneParam.insert(KEY_VALUE, data.value);
+    paramList.append(oneParam);
+    dataHash.insert(KEY_DATA, oneParam);
+    //dataHash.insert(KEY_DATA, paramList);
+    return dataHash;
+
+
+}
+
+/**
  * @brief 生成遥控应答交互数据
  * @param data 参数数据
  * @return 交互数据

@@ -70,10 +70,11 @@ private:
     void    App_SearchStartChar( void );
     void    App_SearchFrameHead( void );
     void    App_RxFixFrame( void );
+    void    App_RxMtrLockFrame( uint8 *apdu, int size );
     void    App_RxVarFrame( uint8 *apdu, int size );
     void    App_RxDAResult( uint8 *asdu, int size );
     void    MakeDAReportTime(uint8 *ptr , FETIME * atime);
-    
+
     void    App_RxAllDataConf( uint8 *asdu, int size );
     void    App_RxAllKwhConf( uint8 *asdu, int size );
     void    App_RxTimeConf( uint8 *asdu, int size );
