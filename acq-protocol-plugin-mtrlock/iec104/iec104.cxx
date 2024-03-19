@@ -2320,17 +2320,9 @@ void Iec104::App_SearchFrameHead( void )
          pTxRxOutBuf->WriteDirect(&App_Layer.rxData[0],App_Layer.rxData[1]+2);    
         pTxRxOutBuf->WriteTransEnd( );
 #endif
-        for(int i=1;i<4;i++)
-        {
-            if(i==2)
-            {
-                rxData2 = QString::number(App_Layer.rxData[i]);
-            }
-        }
 
 
-        LOG_INFO(pRouteInf->GetChnId(), "rxData2"+rxData2);
-        if( rxData2=="106"  )                //密码信息命令设置反馈ldq
+        if( App_Layer.rxData[2]==106  )                //密码信息命令设置反馈ldq
         {
             App_RxMtrLockFrame(  &App_Layer.rxData[0],App_Layer.rxData[1]+2);
         }
