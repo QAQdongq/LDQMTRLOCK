@@ -1317,13 +1317,30 @@ int Iec104::App_SetPasswordReg(COMMAND *command )
     buf[13] = (data->lockno >> 8) & 0xFF;  // 获取中间字节
     buf[14] = (data->lockno >> 16) & 0xFF; // 获取最高字节
 
-    //四个字节表示密码信息。（低位前，高位后）密码最大值应小于268435455
+    //四个字节表示密码信息。（低位前，高位后）密码最大值应小于16777215
     buf[15] = data->passwd & 0xFF;// 获取最低字节;
     buf[16] = (data->passwd >> 8) & 0xFF;  // 获取2字节
     buf[17] = (data->passwd >> 16) & 0xFF; // 获取3字节
     buf[18] = (data->passwd >> 24) & 0xFF; // 获取最高字节
     //设置字节最高4位，代表一些属性
-    buf[18] = buf[18]+0x70;
+    uint8 mybuf = 0x70;
+    if(0==1)//最高位字节的第8位bit表示密码的有效状态，其中 0：表示密码解除 1：表示密码生效；
+    {
+        mybuf+=64;
+    }
+    if(0==2)//最高位字节的第7位bit表示远方操作锁定状态，其中 0：表示不需要锁定远方操作 1：表示需要锁定远方操作；
+    {
+        mybuf+=32;
+    }
+    if(0==3)//最高位字节的第6位bit表示就地开门操作允许状态，其中 0：表示不允许就地开门操作 1：表示允许就地开门操作；
+    {
+        mybuf+=16;
+    }
+    if(0==4)//最高位字节的第5位bit表示密码锁自身清除密码操作允许状态，其中 0：表示不允许输入密码后自身清除密码操作 1：表示允许输入密码后自身清除密码操作
+    {
+        mybuf+=8;
+    }
+    buf[18] = buf[18]+mybuf;
 
     AddNeedSendFrame( buf, 19 );
     LOG_INFO(pRouteInf->GetChnId(),  "已发送密码信息命令设置");
@@ -2344,18 +2361,68 @@ void Iec104::App_RxMtrLockFrame( uint8 *apdu, int size )
 
     LOG_INFO(pRouteInf->GetChnId(), "ldqlalala5");
 
-    //解析报文至结构体中----倒是解析啊！写个注释就睡觉是吧。。。还是不想写啊~
+    //解析报文至结构体中
     SetPasswordReqParam_S data;
+    if(apdu[8]==0x07)//命令设置反馈处理成功
+    {
+        data.value= 1;
+        data.message= "命令设置反馈处理成功";
+
+    }else if(apdu[8]==0x47)
+    {
+
+         data.value= 0;
+         if(apdu[9]==0x4A)
+         {
+            data.message= "74：表示失败且失败原因为未知。";
+         }else if(apdu[9]==0x4B)
+         {
+            data.message= "75：表示失败且失败原因为需要解除的密码信息不存在。";
+         }else if(apdu[9]==0x4C)
+         {
+            data.message= "76：表示失败且失败原因为需要下发设置的密码信息已存在。";
+         }else if(apdu[9]==0x4D)
+         {
+            data.message= "77：表示失败且失败原因为密码锁存储密码信息的空间不足(存储已满40个密码)。";
+         }else if(apdu[9]==0x4E)
+         {
+            data.message= "78：表示失败且失败原因为需要下发设置的密码锁设备不存在。";
+         }else if(apdu[9]==0x4F)
+         {
+            data.message= "79：表示失败且失败原因为下发设置的密码信息为无效密码。";
+         }else if(apdu[9]==0x50)
+         {
+            data.message= "80：表示失败且失败原因为密码锁的存储内存flash打开失败。";
+         }else if(apdu[9]==0x51)
+         {
+            data.message= "81：表示失败且失败原因为密码锁中巡检密码已存在";
+         }else if(apdu[9]==0x52)
+         {
+            data.message= "82：表示失败且失败原因为密码锁设备不支持该功能。";
+         }
+    }
+
+    data.lockno = apdu[14]*65536+apdu[13]*256+apdu[12]*65536;
+
+    //得到锁号
+    data.lockno = 0;
+    for (int i = 14; i > 11; i--) {
+        data.lockno = data.lockno * 256 + apdu[i]; // 256 = 16^2，根据位权相加
+    }
+
+    //得到密码
+    data.passwd = 0;
+    for (int i = 17; i >14; i--) {
+         data.passwd = data.passwd * 256 + apdu[i]; // 256 = 16^2，根据位权相加
+    }
+
 
     data.rtuId = pRouteInf->GetRtuId();
     data.cchId =pRouteInf->GetChnId();
-    data.passwd = 123456;
-    data.lockno =2955;
-    data.value= 1;
-    data.message= "lalala";
-
+   //data.passwd = 123456;
+   // data.lockno =2955;
+    //data.message= "lalala";
     pRawDb->SendSetPassword(data);//上送遥控命令到智能分析应用
-    //pRawDb->SendCmdCallDataEnd(pRouteInf->GetRtuId(), pRouteInf->GetChnId(), CMD_RESULT_FAIL, "Callalldata get a nack!");
 
 
 
