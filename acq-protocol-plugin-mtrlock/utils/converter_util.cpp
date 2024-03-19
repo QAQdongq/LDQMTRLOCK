@@ -404,7 +404,7 @@ QVariantHash ConverterUtil::toYKReqHash(const YKReqParam_S &data)
  * @param data 参数数据
  * @return 交互数据
  */
-static QVariantHash toSetPasswordHash(const SetPasswordReqParam_S &data)
+QVariantHash ConverterUtil::toSetPasswordHash(const SetPasswordReqParam_S &data)
 {
     /*样例：
         {

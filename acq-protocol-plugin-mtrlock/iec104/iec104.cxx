@@ -2341,18 +2341,22 @@ void Iec104::App_SearchFrameHead( void )
 
 void Iec104::App_RxMtrLockFrame( uint8 *apdu, int size )
 {
+
     LOG_INFO(pRouteInf->GetChnId(), "ldqlalala5");
 
-    //解析报文至结构体中
+    //解析报文至结构体中----倒是解析啊！写个注释就睡觉是吧。。。还是不想写啊~
     SetPasswordReqParam_S data;
 
+    data.rtuId = pRouteInf->GetRtuId();
     data.cchId =pRouteInf->GetChnId();
     data.passwd = 123456;
     data.lockno =2955;
     data.value= 1;
     data.message= "lalala";
-    App_RxYkConf( apdu, size );
-    //pRawDb->SendSetPassword(data);//上送遥控命令到智能分析应用
+
+    pRawDb->SendSetPassword(data);//上送遥控命令到智能分析应用
+    //pRawDb->SendCmdCallDataEnd(pRouteInf->GetRtuId(), pRouteInf->GetChnId(), CMD_RESULT_FAIL, "Callalldata get a nack!");
+
 
 
 }

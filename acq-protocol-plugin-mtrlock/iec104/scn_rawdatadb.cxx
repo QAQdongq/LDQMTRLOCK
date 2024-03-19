@@ -582,6 +582,7 @@ void SCN_RawdataDb::SendSetPassword(const SetPasswordReqParam_S &data)
     if(m_protoInterface)
     {
         m_protoInterface->sendToGatewayByMq(dataHash);//通过MQ上送
+        LOG_INFO(this->m_chnId,"MQ上送");
     }
 }
 
