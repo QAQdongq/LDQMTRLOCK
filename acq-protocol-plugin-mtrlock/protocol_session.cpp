@@ -285,7 +285,6 @@ void AcqProtocolSession::sendCmdData(const QVariantHash &data)
     std::list<COMMAND> cmdList;
     bool ret = false;
 
-    //ldq测试
     //LOG_ERROR(m_cchId, cmdType);
     switch(cmdType)
     {

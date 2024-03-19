@@ -2297,7 +2297,6 @@ void Iec104::App_SearchStartChar( void )
 ********************************************************************************/
 void Iec104::App_SearchFrameHead( void )
 {
-    LOG_INFO(pRouteInf->GetChnId(), "ldqlalala1");
     if( pRxBuf->getReadableSize() >= App_Layer.rxData[1]+1 )
     {
         pRxBuf->read( &App_Layer.rxData[1], App_Layer.rxData[1]+1, MOVE );
@@ -2305,7 +2304,6 @@ void Iec104::App_SearchFrameHead( void )
         TIME curtime;
         GetCurSec( &curtime );
         App_Layer.LastRxTime = curtime.Sec;                //收到帧，刷新接收计时器
-        LOG_INFO(pRouteInf->GetChnId(), "ldqlalala2");
 #if CFQ
         char file_name[FILE_NAME_LENGTH];
         char del_name[FILE_NAME_LENGTH];
@@ -2322,14 +2320,10 @@ void Iec104::App_SearchFrameHead( void )
          pTxRxOutBuf->WriteDirect(&App_Layer.rxData[0],App_Layer.rxData[1]+2);    
         pTxRxOutBuf->WriteTransEnd( );
 #endif
-        QString rxData2 = "lzf";
         for(int i=1;i<4;i++)
         {
-            LOG_INFO(pRouteInf->GetChnId(), "ldq"+ QString::number(i));
-            LOG_INFO(pRouteInf->GetChnId(), "ldq"+ QString::number(App_Layer.rxData[i]));
             if(i==2)
             {
-                LOG_INFO(pRouteInf->GetChnId(), "lzf"+ QString::number(App_Layer.rxData[i]));
                 rxData2 = QString::number(App_Layer.rxData[i]);
             }
         }
@@ -2338,7 +2332,6 @@ void Iec104::App_SearchFrameHead( void )
         LOG_INFO(pRouteInf->GetChnId(), "rxData2"+rxData2);
         if( rxData2=="106"  )                //密码信息命令设置反馈ldq
         {
-            LOG_INFO(pRouteInf->GetChnId(), "ldqlalala4");
             App_RxMtrLockFrame(  &App_Layer.rxData[0],App_Layer.rxData[1]+2);
         }
         else if( App_Layer.rxData[2] & 0x01 )                //U or S format
@@ -2359,7 +2352,6 @@ void Iec104::App_SearchFrameHead( void )
 void Iec104::App_RxMtrLockFrame( uint8 *apdu, int size )
 {
 
-    LOG_INFO(pRouteInf->GetChnId(), "ldqlalala5");
 
     //解析报文至结构体中
     SetPasswordReqParam_S data;

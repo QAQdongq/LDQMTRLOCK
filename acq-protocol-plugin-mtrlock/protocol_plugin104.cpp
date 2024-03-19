@@ -245,7 +245,7 @@ void Protocol104Plugin::recieveFromDeviceSlot(const QByteArray &data)
  */
 void Protocol104Plugin::recieveFromGatewaySlot(const QVariantHash &data)
 {
-    LOG_INFO(m_cchId, "====> ldq2data="+ QString(AcqHashToJson(data)));
+    LOG_INFO(m_cchId, "====>data="+ QString(AcqHashToJson(data)));
     if(m_session)
     {
         m_session->sendCmdData(data);
