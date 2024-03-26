@@ -924,15 +924,16 @@ std::shared_ptr<BaseCmdData_S> ConverterUtil::toCmdData(const QString &code, con
         cmdData->taskId = taskId;
         cmdData->time = data.value(KEY_TIME).toLongLong();
         cmdData->nodeKey = data.value(KEY_NODEKEY).toString();
-        QVariantList paramList = data.value(KEY_DATA).toList();
-        for(int i=0;i<paramList.size();++i)
-        {
+        QVariant paramList = data.value(KEY_DATA);//.toList();
+        //for(int i=0;i<paramList.size();++i)
+        //{
             std::shared_ptr<SetPasswordRegParam_S> setPasswordRegParam = std::make_shared<SetPasswordRegParam_S>();
-            QVariantHash oneParam=paramList.at(i).toHash();
+            QVariantHash oneParam=paramList.toHash();
             setPasswordRegParam->passwd = oneParam.value(KEY_PASSWD).toInt();
             setPasswordRegParam->lockno = oneParam.value(KEY_LOCKNO).toInt();
+            setPasswordRegParam->controlNum0x = oneParam.value(KEY_ControlNum0X).toString();
             cmdData->param.push_back(setPasswordRegParam);
-        }
+        //}
         return cmdData;
 
     }

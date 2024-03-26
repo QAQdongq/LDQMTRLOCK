@@ -551,6 +551,7 @@ typedef struct SetPasswordRegParam:public BaseParam_S
     QString cchId;//通道号
     int passwd;//密码
     int lockno;//遥控失败原因
+    QString controlNum0x;//控制字最高位的前4位
     SetPasswordRegParam& operator=(const SetPasswordRegParam &data)
     {
         if(this == &data)
@@ -561,6 +562,7 @@ typedef struct SetPasswordRegParam:public BaseParam_S
         this->cchId = data.cchId;
         this->passwd = data.passwd;
         this->lockno = data.lockno;
+        this->controlNum0x = data.controlNum0x;
         return *this;
     }
 }SetPasswordRegParam_S;

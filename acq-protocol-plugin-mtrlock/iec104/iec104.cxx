@@ -1318,12 +1318,13 @@ int Iec104::App_SetPasswordReg(COMMAND *command )
     buf[14] = (data->lockno >> 16) & 0xFF; // 获取最高字节
 
     //四个字节表示密码信息。（低位前，高位后）密码最大值应小于16777215
-    buf[15] = data->passwd & 0xFF;// 获取最低字节;
-    buf[16] = (data->passwd >> 8) & 0xFF;  // 获取2字节
-    buf[17] = (data->passwd >> 16) & 0xFF; // 获取3字节
-    buf[18] = (data->passwd >> 24) & 0xFF; // 获取最高字节
+    buf[18] = data->passwd & 0xFF;// 获取最低字节;
+    buf[17] = (data->passwd >> 8) & 0xFF;  // 获取2字节
+    buf[16] = (data->passwd >> 16) & 0xFF; // 获取3字节
+    buf[15] = (data->passwd >> 24) & 0xFF; // 获取最高字节
     //设置字节最高4位，代表一些属性
-    uint8 mybuf = 0x70;
+     bool ok;
+    uint8 mybuf = data->controlNum0x.toUInt(&ok, 16); // 将字符串解释为16进制的数字
     if(0==1)//最高位字节的第8位bit表示密码的有效状态，其中 0：表示密码解除 1：表示密码生效；
     {
         mybuf+=64;
@@ -1340,7 +1341,9 @@ int Iec104::App_SetPasswordReg(COMMAND *command )
     {
         mybuf+=8;
     }
-    buf[18] = buf[18]+mybuf;
+
+
+    buf[15] = buf[15]+mybuf;
 
     AddNeedSendFrame( buf, 19 );
     LOG_INFO(pRouteInf->GetChnId(),  "已发送密码信息命令设置");
