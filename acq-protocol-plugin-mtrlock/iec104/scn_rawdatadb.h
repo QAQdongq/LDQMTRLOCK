@@ -86,6 +86,11 @@ public:
     virtual void SendSetPassword(const SetPasswordReqParam_S &data);
 
     /**
+    * @brief 上送密码锁的密码信息
+    */
+    virtual void SendSubPassword(const SubPasswordParam_S &data);
+
+    /**
      * @brief 设置所连接的设备IP和端口(发送源头端)
      * @param source 所连接的设备IP和端口
      */

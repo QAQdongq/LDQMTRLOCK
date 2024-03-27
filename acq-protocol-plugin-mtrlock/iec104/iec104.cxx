@@ -2327,8 +2327,13 @@ void Iec104::App_SearchFrameHead( void )
 
         if( App_Layer.rxData[2]==106  )                //密码信息命令设置反馈ldq
         {
-            App_RxMtrLockFrame(  &App_Layer.rxData[0],App_Layer.rxData[1]+2);
+            App_RxMtrLockSetPasswordResFrame(  &App_Layer.rxData[0],App_Layer.rxData[1]+2);
         }
+        else if( App_Layer.rxData[2]==198 )           //上送密码锁的密码信息ldq
+        {
+            App_RxMtrLockSubPasswordFrame(  &App_Layer.rxData[0],App_Layer.rxData[1]+2);
+        }
+
         else if( App_Layer.rxData[2] & 0x01 )                //U or S format
         {
             App_RxFixFrame( );
@@ -2344,7 +2349,7 @@ void Iec104::App_SearchFrameHead( void )
 
 
 
-void Iec104::App_RxMtrLockFrame( uint8 *apdu, int size )
+void Iec104::App_RxMtrLockSetPasswordResFrame( uint8 *apdu, int size )
 {
 
 
@@ -2389,7 +2394,6 @@ void Iec104::App_RxMtrLockFrame( uint8 *apdu, int size )
          }
     }
 
-    data.lockno = apdu[14]*65536+apdu[13]*256+apdu[12]*65536;
 
     //得到锁号
     data.lockno = 0;
@@ -2402,6 +2406,8 @@ void Iec104::App_RxMtrLockFrame( uint8 *apdu, int size )
     for (int i = 17; i >14; i--) {
          data.passwd = data.passwd * 256 + apdu[i]; // 256 = 16^2，根据位权相加
     }
+    int result = (apdu[18] & 0x0F); // 舍弃前四位
+    data.passwd+=result*256*256*256;
 
 
     data.rtuId = pRouteInf->GetRtuId();
@@ -2410,6 +2416,44 @@ void Iec104::App_RxMtrLockFrame( uint8 *apdu, int size )
    // data.lockno =2955;
     //data.message= "lalala";
     pRawDb->SendSetPassword(data);//上送遥控命令到智能分析应用
+
+
+
+}
+
+void Iec104::App_RxMtrLockSubPasswordFrame( uint8 *apdu, int size )
+{
+
+
+    //解析报文至结构体中
+    SubPasswordParam_S data;
+
+    data.value= 1;
+    data.message= "上送密码锁的密码信息";
+
+
+
+    //得到锁号
+    data.lockno = 0;
+    for (int i = 14; i > 11; i--) {
+        data.lockno = data.lockno * 256 + apdu[i]; // 256 = 16^2，根据位权相加
+    }
+
+    //得到密码
+    data.passwd = 0;
+    for (int i = 17; i >14; i--) {
+         data.passwd = data.passwd * 256 + apdu[i]; // 256 = 16^2，根据位权相加
+    }
+    int result = (apdu[18] & 0x0F); // 舍弃前四位
+    data.passwd+=result*256*256*256;
+
+
+    data.rtuId = pRouteInf->GetRtuId();
+    data.cchId =pRouteInf->GetChnId();
+   //data.passwd = 123456;
+   // data.lockno =2955;
+    //data.message= "lalala";
+    pRawDb->SendSubPassword(data);//上送遥控命令到智能分析应用
 
 
 

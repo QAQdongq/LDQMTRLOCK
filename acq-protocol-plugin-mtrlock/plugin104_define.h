@@ -111,6 +111,8 @@ static const std::string CMD_TYPE_STR_CALLDD = CODE_CALLDDREQ;//"CallDDReq";//�
 static const std::string CMD_TYPE_STR_CALLDDEND = CODE_CALLDDRSP;//"CallDDRsp";//总召电度（脉冲）应答（结束）
 
 static const std::string CMD_TYPE_STR_SetPasswordReg = CODE_SetPasswordReg;//"SetPasswordReg";//密码锁下发密码命令
+static const std::string CMD_TYPE_STR_SetPasswordRes = CODE_SetPasswordRes;//"SetPasswordRes";//密码锁下发密码命令反馈
+static const std::string CMD_TYPE_STR_SubPassword = CODE_SubPassword;//"SubPassword";//上送密码锁的密码信息
 
 //遥控结果, 1:成功； -1：超时；-2：其他原因
 typedef enum
@@ -289,7 +291,39 @@ typedef struct SetPasswordReqParam:public BaseParam_S
 }SetPasswordReqParam_S;
 
 
+//上送密码锁的密码信息
+typedef struct SubPasswordParam:public BaseParam_S
+{
 
+    QString cchId;//通道号
+    int passwd;//密码
+    int lockno;//锁号
+    int value;//结果1表示成功，0表示失败
+    QString message;//错误码及原因
+
+    SubPasswordParam()
+    {
+        cchId="";
+        passwd=0;
+        lockno=0;
+        value=0;
+        message="";
+    }
+    SubPasswordParam& operator=(const SubPasswordParam &data)
+    {
+        if(this == &data)
+        {
+            return *this;
+        }
+        this->rtuId = data.rtuId;
+        this->cchId = data.cchId;
+        this->passwd = data.passwd;
+        this->lockno = data.lockno;
+        this->value = data.value;
+        this->message = data.message;
+        return *this;
+    }
+}SubPasswordParam_S;
 
 //遥控[或遥调]应答数据参数
 typedef struct YKRspParam:public BaseParam_S

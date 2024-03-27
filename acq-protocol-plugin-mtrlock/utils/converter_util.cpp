@@ -425,7 +425,51 @@ QVariantHash ConverterUtil::toSetPasswordHash(const SetPasswordReqParam_S &data)
 
      */
     QVariantHash dataHash;
-    dataHash.insert(KEY_CODE, QString::fromStdString(CMD_TYPE_STR_SetPasswordReg));//信息命令设置反馈
+    dataHash.insert(KEY_CODE, QString::fromStdString(CMD_TYPE_STR_SetPasswordRes));//上送密码锁的密码信息
+    dataHash.insert(KEY_TIME, QDateTime::currentMSecsSinceEpoch());
+    dataHash.insert(KEY_NODEKEY, "");
+    QVariantList paramList;
+    QVariantHash oneParam;
+    oneParam.insert(KEY_RTUID, data.rtuId);
+    oneParam.insert(KEY_CHNID, data.cchId);
+    oneParam.insert(KEY_PASSWD, data.passwd);
+    oneParam.insert(KEY_LOCKNO, data.lockno);
+    oneParam.insert(KEY_VALUE, data.value);
+    paramList.append(oneParam);
+    dataHash.insert(KEY_DATA, oneParam);
+    //dataHash.insert(KEY_DATA, paramList);
+    return dataHash;
+
+
+}
+
+/**
+ * @brief 上送密码锁的密码信息
+ * @param data 参数数据
+ * @return 交互数据
+ */
+QVariantHash ConverterUtil::toSubPasswordHash(const SubPasswordParam_S &data)
+{
+    /*样例：
+        {
+        "code":"SetPasswordRegReq",                    //
+        "time":"1630564973670",            //当前命令生成的时间点(毫秒)
+        "nodeKey":"192.168.80.100:1",        //当前采集服务的MQ子主题tag关键字
+        "data":[                        //遥控数据
+        {
+        "rtuId":1,
+        "cchId":1,          // 通道ID
+        "passwd":1,             // 密码
+        "lockno":0,          // 锁号
+        "value":1,            // 结果
+        "message":""          //错误码+内容
+        }
+        ]
+        }
+
+     */
+    QVariantHash dataHash;
+    dataHash.insert(KEY_CODE, QString::fromStdString(CMD_TYPE_STR_SubPassword));//信息命令设置反馈
     dataHash.insert(KEY_TIME, QDateTime::currentMSecsSinceEpoch());
     dataHash.insert(KEY_NODEKEY, "");
     QVariantList paramList;
@@ -906,7 +950,7 @@ std::shared_ptr<BaseCmdData_S> ConverterUtil::toCmdData(const QString &code, con
         return cmdData;
     }
     //ldq20240307在此处解析json数据为byte
-    if(QString::fromStdString(CMD_TYPE_STR_SetPasswordReg) == code)
+    if(QString::fromStdString(CMD_TYPE_STR_SetPasswordRes) == code)
     {
 
         /*样例：

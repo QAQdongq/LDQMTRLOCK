@@ -581,10 +581,30 @@ void SCN_RawdataDb::SendSetPassword(const SetPasswordReqParam_S &data)
 
     if(m_protoInterface)
     {
-        m_protoInterface->sendToGatewayByMq(dataHash);//通过MQ上送
-        LOG_INFO(this->m_chnId,"MQ上送");
+        m_protoInterface->sendToGatewayByMq(dataHash,true);//通过MQ上送
+        LOG_INFO(this->m_chnId,"MQ上送SetPasswordRes");
     }
 }
+
+/**
+ * @brief 上送密码锁的密码信息
+ */
+void SCN_RawdataDb::SendSubPassword(const SubPasswordParam_S &data)
+{
+    //std::string dataListStr = StringUtil::toString("{\"rtuAddr\":%d,\"pointAddr\":%d,\"ykCmd\":%d,\"value\":\"%s\"}",data.rtuAddr,data.pointAddr,data.ykCmd,data.value.c_str());//rtuAddr--RTU地址(公共地址码)；pointAddr--遥控点地址(序号+遥控基地址（不确定是否要+基地址？）)；value--RTU遥控状态(0-分，1-合）
+    //std::string dataJson = MakeSendDataJson(CMD_TYPE_STR_YK, this->m_source, dataListStr);
+    LOG_INFO(this->m_chnId,QString::number(data.lockno));
+
+    QVariantHash dataHash = ConverterUtil::toSubPasswordHash(data);
+
+    if(m_protoInterface)
+    {
+        m_protoInterface->sendToGatewayByMq(dataHash,true);//通过MQ上送
+        LOG_INFO(this->m_chnId,"MQ上送SubPassword");
+    }
+}
+
+
 
 
 /**
