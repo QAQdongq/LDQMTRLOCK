@@ -800,19 +800,40 @@ int Iec104::App_SendSp(COMMAND *command)
     }
     else if( spType ==  SP_TYPE_DIGIT )
     {
-        if(data->strValue.size() != 4)
-        {
-            LOG_ERROR(pRouteInf->GetChnId(), StringUtil::toQString("Iec104::App_SendSp: channo=%s,rtuId=%s, wrong strValue size! It must be 4! \n", pRouteInf->GetChnId().toStdString().c_str(),data->rtuId.toStdString().c_str()));
-            return -1;
-        }
-        uint8 spdigit[4]={0};
-        memcpy(spdigit, data->strValue.toStdString().c_str(), 4);
-        buf[i++] = spdigit[0];
-        buf[i++] = spdigit[1];
-        buf[i++] = spdigit[2];
-        buf[i++] = spdigit[3];
-        LOG_INFO(pRouteInf->GetChnId(), StringUtil::toQString("Iec104::App_SendSp:APPTYPE_SP50 channo=%s,rtuId=%s,strValue=%s\n",pRouteInf->GetChnId().toStdString().c_str(),data->rtuId.toStdString().c_str(), data->strValue.toStdString().c_str()));
-        LOG_INFO(pRouteInf->GetChnId(),  StringUtil::toQString("Iec104::App_SendSp:APPTYPE_SP50 channo=%s,rtuId=%s,spdigit=%02X%02X%02X%02X\n", pRouteInf->GetChnId().toStdString().c_str(),data->rtuId.toStdString().c_str(),spdigit[0],spdigit[1],spdigit[2],spdigit[3]));
+         QStringList parts = data->strValue.split('_');
+         if(parts.size() != 2)
+         {
+             LOG_ERROR(pRouteInf->GetChnId(), StringUtil::toQString("Iec104::App_SendSp: channo=%s,rtuId=%s, wrong strValue ! It must num_num \n", pRouteInf->GetChnId().toStdString().c_str(),data->rtuId.toStdString().c_str()));
+             return -1;
+         }
+
+         int control =  parts[0].toInt();
+
+
+         int passwd = parts[1].toInt();
+         buf[i++] = (passwd >> 24) & 0xFF; // 获取最高字节
+         buf[i-1] = buf[i-1]+control*16;
+
+         buf[i++] = (passwd >> 16) & 0xFF; // 获取3字节
+         buf[i++] = (passwd >> 8) & 0xFF;  // 获取2字节
+         buf[i++] = passwd & 0xFF;// 获取最低字节;
+
+
+
+//        if(data->strValue.size() != 4)
+//        {
+//            LOG_ERROR(pRouteInf->GetChnId(), StringUtil::toQString("Iec104::App_SendSp: channo=%s,rtuId=%s, wrong strValue size! It must be 4! \n", pRouteInf->GetChnId().toStdString().c_str(),data->rtuId.toStdString().c_str()));
+//            return -1;
+//        }
+//        uint8 spdigit[4]={0};
+//        memcpy(spdigit, data->strValue.toStdString().c_str(), 4);
+//        buf[i++] = spdigit[0];
+//        buf[i++] = spdigit[1];
+//        buf[i++] = spdigit[2];
+//        buf[i++] = spdigit[3];
+//        LOG_INFO(pRouteInf->GetChnId(), StringUtil::toQString("Iec104::App_SendSp:APPTYPE_SP50 channo=%s,rtuId=%s,strValue=%s\n",pRouteInf->GetChnId().toStdString().c_str(),data->rtuId.toStdString().c_str(), data->strValue.toStdString().c_str()));
+//        LOG_INFO(pRouteInf->GetChnId(),  StringUtil::toQString("Iec104::App_SendSp:APPTYPE_SP50 channo=%s,rtuId=%s,spdigit=%02X%02X%02X%02X\n", pRouteInf->GetChnId().toStdString().c_str(),data->rtuId.toStdString().c_str(),spdigit[0],spdigit[1],spdigit[2],spdigit[3]));
+
     }
     else
     {
@@ -822,9 +843,9 @@ int Iec104::App_SendSp(COMMAND *command)
 
     j = i;
 
-    if( functionCode == CTRL_FUNC_EXECUTE )
-        buf[i++] = 0;
-    else buf[i++] = 0x80;
+//    if( functionCode == CTRL_FUNC_EXECUTE )
+//        buf[i++] = 0;
+//    else buf[i++] = 0x80;
 
     if( App_SendAppIFormat( buf, i ) == 1 )
     {
@@ -2325,11 +2346,11 @@ void Iec104::App_SearchFrameHead( void )
 #endif
 
 
-        if( App_Layer.rxData[2]==106  )                //密码信息命令设置反馈ldq
+        if( App_Layer.rxData[6]==51  )                //密码信息命令设置反馈ldq
         {
             App_RxMtrLockSetPasswordResFrame(  &App_Layer.rxData[0],App_Layer.rxData[1]+2);
         }
-        else if( App_Layer.rxData[2]==198 )           //上送密码锁的密码信息ldq
+        else if( App_Layer.rxData[6]==7 )           //上送密码锁的密码信息ldq
         {
             App_RxMtrLockSubPasswordFrame(  &App_Layer.rxData[0],App_Layer.rxData[1]+2);
         }
