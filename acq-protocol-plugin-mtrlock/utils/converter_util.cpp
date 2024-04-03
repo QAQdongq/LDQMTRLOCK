@@ -940,11 +940,11 @@ std::shared_ptr<BaseCmdData_S> ConverterUtil::toCmdData(const QString &code, con
             if(spParam->no > 0){
                 spParam->no = noToIndex(spParam->no);
             }
-            //spParam->type = oneParam.value(KEY_TYPE).toInt();
-            //spParam->decValue = oneParam.value(KEY_DECVALUE).toFloat();
-            //spParam->intValue = oneParam.value(KEY_INTVALUE).toInt();
-            //spParam->floatValue = oneParam.value(KEY_FLOATVALUE).toFloat();
-            //spParam->strValue = oneParam.value(KEY_STRVALUE).toString();
+            spParam->type = oneParam.value(KEY_TYPE).toInt();
+            spParam->decValue = oneParam.value(KEY_DECVALUE).toFloat();
+            spParam->intValue = oneParam.value(KEY_INTVALUE).toInt();
+            spParam->floatValue = oneParam.value(KEY_FLOATVALUE).toFloat();
+            spParam->strValue = oneParam.value(KEY_STRVALUE).toString();
             //spParam->passwd = oneParam.value(KEY_PASSWD).toInt();
             //spParam->lockno = oneParam.value(KEY_LOCKNO).toInt();
             //spParam->controlNum0x = oneParam.value(KEY_ControlNum0X).toString();

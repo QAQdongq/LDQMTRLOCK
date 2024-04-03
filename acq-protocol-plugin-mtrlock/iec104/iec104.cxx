@@ -697,6 +697,10 @@ Iec104::~Iec104()
 int Iec104::App_SendSetPoint(COMMAND *command )
 {
     //CtrlCmd *pSp = (CtrlCmd *)command->CmdData;
+    std::shared_ptr<SPReqParam_S> data = std::static_pointer_cast<SPReqParam_S>(command->dataList.front());
+    LOG_INFO(pRouteInf->GetChnId(), QString::number(data->type));
+    LOG_INFO(pRouteInf->GetChnId(), data->strValue);
+    LOG_INFO(pRouteInf->GetChnId(), QString::number(data->no));
 #if 1
     return App_SendSp(command);
 #else
@@ -817,7 +821,12 @@ int Iec104::App_SendSp(COMMAND *command)
          buf[i++] = (passwd >> 16) & 0xFF; // 获取3字节
          buf[i++] = (passwd >> 8) & 0xFF;  // 获取2字节
          buf[i++] = passwd & 0xFF;// 获取最低字节;
+         LOG_INFO(pRouteInf->GetChnId(), "lalala"+QString::number(i));
+         for(int xx=0;xx<i;xx++)
+         {
+             LOG_INFO(pRouteInf->GetChnId(), QString::number(buf[i]));
 
+         }
 
 
 //        if(data->strValue.size() != 4)
@@ -2346,16 +2355,16 @@ void Iec104::App_SearchFrameHead( void )
 #endif
 
 
-        if( App_Layer.rxData[6]==51  )                //密码信息命令设置反馈ldq
-        {
-            App_RxMtrLockSetPasswordResFrame(  &App_Layer.rxData[0],App_Layer.rxData[1]+2);
-        }
-        else if( App_Layer.rxData[6]==7 )           //上送密码锁的密码信息ldq
-        {
-            App_RxMtrLockSubPasswordFrame(  &App_Layer.rxData[0],App_Layer.rxData[1]+2);
-        }
+//        if( App_Layer.rxData[6]==51  )                //密码信息命令设置反馈ldq
+//        {
+//            App_RxMtrLockSetPasswordResFrame(  &App_Layer.rxData[0],App_Layer.rxData[1]+2);
+//        }
+//        else if( App_Layer.rxData[6]==7 )           //上送密码锁的密码信息ldq
+//        {
+//            App_RxMtrLockSubPasswordFrame(  &App_Layer.rxData[0],App_Layer.rxData[1]+2);
+//        }
 
-        else if( App_Layer.rxData[2] & 0x01 )                //U or S format
+        if( App_Layer.rxData[2] & 0x01 )                //U or S format
         {
             App_RxFixFrame( );
         }
@@ -2717,6 +2726,7 @@ void Iec104::App_RxVarFrame( uint8 *apdu, int size )
     case APPTYPE_SP_WT30:
     case APPTYPE_DP_WT31:
         App_RxSoeFrame( asdu, size );
+        LOG_DEBUG(pRouteInf->GetChnId(),"lalalala1------------");
         break;
     case APPTYPE_ME_NT:
     case APPTYPE_ME_WT:
@@ -4522,6 +4532,7 @@ void Iec104::App_RxYxFrame( uint8 *asdu, int size )
 ********************************************************************************/
 void Iec104::App_RxSPConf( uint8 *asdu, int size )
 {
+    LOG_DEBUG(pRouteInf->GetChnId(),"lalalala2------------应用层处理设点确认帧");
     uint32    infnum = asdu[1]&0x7f;
     if(infnum!=1)
     {
@@ -4694,6 +4705,7 @@ void Iec104::App_RxSPConf( uint8 *asdu, int size )
     }
     if(App_Layer.CtrlReply >=0)
     {
+
         pCommandMem->SendSpReply(CMD_TYPE_SP, pRouteInf->GetRtuId(), spNo, App_Layer.CtrlReply, taskInfoPtr);
     }    
     pTaskList->removeATask(codeQStr, spNo);
