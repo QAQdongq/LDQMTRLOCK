@@ -730,7 +730,8 @@ int Iec104::App_SendSp(COMMAND *command)
     LOG_INFO(pRouteInf->GetChnId(), StringUtil::toQString("Iec104::App_SendSp: channo=%s,rtuId=%s\n", pRouteInf->GetChnId().toStdString().c_str(),data->rtuId.toStdString().c_str()));
 
     i = 2;
-    int spType = data->type;//pSp->protoCmdType;
+    //int spType = data->type;//pSp->protoCmdType;
+    int spType =3;
     if( spType ==  SP_TYPE_DECIMAL )
     {
         buf[0] = APPTYPE_SP48;
@@ -4532,7 +4533,14 @@ void Iec104::App_RxYxFrame( uint8 *asdu, int size )
 ********************************************************************************/
 void Iec104::App_RxSPConf( uint8 *asdu, int size )
 {
-    LOG_DEBUG(pRouteInf->GetChnId(),"lalalala2------------应用层处理设点确认帧");
+//    for(int xx = 0;xx<size;xx++)
+//    {
+//        // 将十六进制值转换为字符串
+//        QString hexString = QString("%1").arg(asdu[xx], 2, 16, QChar('0')).toUpper();
+//        LOG_INFO(pRouteInf->GetChnId(),"lalala----"+hexString);
+
+//    }
+//    LOG_DEBUG(pRouteInf->GetChnId(),"lalalala2------------应用层处理设点确认帧");
     uint32    infnum = asdu[1]&0x7f;
     if(infnum!=1)
     {
@@ -4631,26 +4639,27 @@ void Iec104::App_RxSPConf( uint8 *asdu, int size )
         }
         else if( (asdu[2]&0x3f) == APP_COT_ACT_CON )
         {
-            if( (asdu[2]&0x40) == 0x40 )    //neg conf
-            {
-                LOG_INFO(pRouteInf->GetChnId(), "IEC104:App_RxSPConf Received SP select(exec) neg confirm. \n");//设置点选择（执行）否认
+//            if( (asdu[2]&0x40) == 0x40 )    //neg conf
+//            {
+//                LOG_INFO(pRouteInf->GetChnId(), "IEC104:App_RxSPConf Received SP select(exec) neg confirm. \n");//设置点选择（执行）否认
 
-                //设置点预置失败
-                if(App_Layer.CtrlType == CTRL_FUNC_SELECT)
-                {
-                    App_Layer.CtrlReply = COMMAND_SELECT_FAIL;
-                }
-                else if(App_Layer.CtrlType == CTRL_FUNC_EXECUTE)
-                {
-                    App_Layer.CtrlReply = COMMAND_YKEXEC_FAIL;
-                }		
-                else if( App_Layer.CtrlType == CTRL_FUNC_CANCEL)
-                {
-                    App_Layer.CtrlReply = COMMAND_YKCANCEL_FAIL;
-                }
-            }
-            else    //yes conf 
-            {
+//                //设置点预置失败
+//                if(App_Layer.CtrlType == CTRL_FUNC_SELECT)
+//                {
+//                    App_Layer.CtrlReply = COMMAND_SELECT_FAIL;
+//                }
+//                else if(App_Layer.CtrlType == CTRL_FUNC_EXECUTE)
+//                {
+//                    App_Layer.CtrlReply = COMMAND_YKEXEC_FAIL;
+//                    LOG_DEBUG(pRouteInf->GetChnId(),"lalalala2------------应用层处理设点确认帧");
+//                }
+//                else if( App_Layer.CtrlType == CTRL_FUNC_CANCEL)
+//                {
+//                    App_Layer.CtrlReply = COMMAND_YKCANCEL_FAIL;
+//                }
+//            }
+            //else    //yes conf
+            //{
                 if( App_Layer.CtrlType == CTRL_FUNC_SELECT )
                 {
                     LOG_INFO(pRouteInf->GetChnId(), "IEC104:App_RxSPConf Received SP select confirm. \n");//设置点选择确认
@@ -4664,8 +4673,11 @@ void Iec104::App_RxSPConf( uint8 *asdu, int size )
                 {
                     LOG_INFO(pRouteInf->GetChnId(), "IEC104:App_RxSPConf Received SP exec confirm.\n");//设置点执行确认
 
+
+
+
                     //设置点执行成功
-                    App_Layer.CtrlReply=COMMAND_YKEXEC_SUCCESS;
+                    App_Layer.CtrlReply=asdu[2]+asdu[3]+1000;
                     //App_Layer.State = IEC104_APP_STATE_IDLE;
                     //AckFinished = 1;
                 }
@@ -4673,7 +4685,7 @@ void Iec104::App_RxSPConf( uint8 *asdu, int size )
                 {
                     App_Layer.CtrlReply = COMMAND_YKCANCEL_SUCCESS;
                 }
-            }
+            //}
         }
         else if( (asdu[2]&0x3f) == APP_COT_UNKNOWN_INFOADDR )//未知的信息对象地址
         {

@@ -279,7 +279,7 @@ int SCN_CommandMem::SendYkYtReply(int cmdType,const QString &rtuId, int pointNo,
             LOG_DEBUG(m_cchId, QString("COMMAND_YKEXEC_SUCCESS ctrlReply:%1").arg(ctrlReply));
             ykCmd = YK_CMD_EXECUTE;
             ykResult = YK_RESULT_SUCCESS;
-            reason = "执行-成功！";//QObject::tr("Execute success!"); //执行成功！
+            reason = "执行-成功1！";//QObject::tr("Execute success!"); //执行成功！
             break;
         }        
         case COMMAND_YKEXEC_TIMEOUT://执行超时
@@ -447,7 +447,77 @@ int SCN_CommandMem::SendSpReply(int cmdType, const QString &rtuId, int pointNo, 
         {
             LOG_INFO(m_cchId, QString("COMMAND_YKEXEC_SUCCESS  ctrlReply:%1").arg(ctrlReply));
             ykResult = YK_RESULT_SUCCESS;
-            reason = "执行-成功！";//QObject::tr("Execute success!"); //执行成功！
+            reason = "执行-成功2！";//QObject::tr("Execute success!"); //执行成功！
+            break;
+        }
+        case 1007://反馈成功
+        {
+            LOG_INFO(m_cchId, QString("COMMAND_YKEXEC_SUCCESS  ctrlReply:%1").arg(ctrlReply));
+            ykResult = YK_RESULT_SUCCESS;
+            reason = "00-执行成功！";//QObject::tr("Execute success!"); //执行成功！
+            break;
+        }
+        case 1145://反馈成功但设置失败
+        {
+            LOG_INFO(m_cchId, QString("COMMAND_YKEXEC_SUCCESS  ctrlReply:%1").arg(ctrlReply));
+            ykResult = YK_RESULT_SUCCESS;
+            reason = "4A-表示失败且失败原因为未知。";//QObject::tr("Execute success!"); //执行成功！
+            break;
+        }
+        case 1146://反馈成功但设置失败
+        {
+            LOG_INFO(m_cchId, QString("COMMAND_YKEXEC_SUCCESS  ctrlReply:%1").arg(ctrlReply));
+            ykResult = YK_RESULT_SUCCESS;
+            reason = "4B-表示失败且失败原因为需要解除的密码信息不存在。";//QObject::tr("Execute success!"); //执行成功！
+            break;
+        }
+        case 1147://反馈成功但设置失败
+        {
+            LOG_INFO(m_cchId, QString("COMMAND_YKEXEC_SUCCESS  ctrlReply:%1").arg(ctrlReply));
+            ykResult = YK_RESULT_SUCCESS;
+            reason = "4C-表示失败且失败原因为需要下发设置的密码信息已存在。";//QObject::tr("Execute success!"); //执行成功！
+            break;
+        }
+        case 1148://反馈成功但设置失败
+        {
+            LOG_INFO(m_cchId, QString("COMMAND_YKEXEC_SUCCESS  ctrlReply:%1").arg(ctrlReply));
+            ykResult = YK_RESULT_SUCCESS;
+            reason = "4D-表示失败且失败原因为密码锁存储密码信息的空间不足(存储已满40个密码)。";//QObject::tr("Execute success!"); //执行成功！
+            break;
+        }
+        case 1149://反馈成功但设置失败
+        {
+            LOG_INFO(m_cchId, QString("COMMAND_YKEXEC_SUCCESS  ctrlReply:%1").arg(ctrlReply));
+            ykResult = YK_RESULT_SUCCESS;
+            reason = "4E-表示失败且失败原因为需要下发设置的密码锁设备不存在。";//QObject::tr("Execute success!"); //执行成功！
+            break;
+        }
+        case 1150://反馈成功但设置失败
+        {
+            LOG_INFO(m_cchId, QString("COMMAND_YKEXEC_SUCCESS  ctrlReply:%1").arg(ctrlReply));
+            ykResult = YK_RESULT_SUCCESS;
+            reason = "4F-表示失败且失败原因为下发设置的密码信息为无效密码。";//QObject::tr("Execute success!"); //执行成功！
+            break;
+        }
+        case 1151://反馈成功但设置失败
+        {
+            LOG_INFO(m_cchId, QString("COMMAND_YKEXEC_SUCCESS  ctrlReply:%1").arg(ctrlReply));
+            ykResult = YK_RESULT_SUCCESS;
+            reason = "50-表示失败且失败原因为密码锁的存储内存flash打开失败。";//QObject::tr("Execute success!"); //执行成功！
+            break;
+        }
+        case 1152://反馈成功但设置失败
+        {
+            LOG_INFO(m_cchId, QString("COMMAND_YKEXEC_SUCCESS  ctrlReply:%1").arg(ctrlReply));
+            ykResult = YK_RESULT_SUCCESS;
+            reason = "51-表示失败且失败原因为密码锁中巡检密码已存在。";//QObject::tr("Execute success!"); //执行成功！
+            break;
+        }
+        case 1153://反馈成功但设置失败
+        {
+            LOG_INFO(m_cchId, QString("COMMAND_YKEXEC_SUCCESS  ctrlReply:%1").arg(ctrlReply));
+            ykResult = YK_RESULT_SUCCESS;
+            reason = "52-表示失败且失败原因为密码锁设备不支持该功能。";//QObject::tr("Execute success!"); //执行成功！
             break;
         }
         case COMMAND_YKEXEC_TIMEOUT://执行超时

@@ -660,10 +660,10 @@ QVariantHash ConverterUtil::toSPRspHash(const SPRspParam &data, const QString &t
     oneParam.insert(KEY_RTUID, data.rtuId);
     oneParam.insert(KEY_CHNID, data.cchId);
     oneParam.insert(KEY_POINTNO, ConverterUtil::pointIndexToNo(data.no));
-    oneParam.insert(KEY_TYPE, data.type);
-    oneParam.insert(KEY_DECVALUE, data.decValue);
-    oneParam.insert(KEY_INTVALUE, data.intValue);
-    oneParam.insert(KEY_FLOATVALUE, data.floatValue);
+//    oneParam.insert(KEY_TYPE, data.type);
+//    oneParam.insert(KEY_DECVALUE, data.decValue);
+//    oneParam.insert(KEY_INTVALUE, data.intValue);
+//    oneParam.insert(KEY_FLOATVALUE, data.floatValue);
     oneParam.insert(KEY_STRVALUE, data.strValue);
     oneParam.insert(KEY_RESULT, data.result);
     oneParam.insert(KEY_REASON, data.reason);
