@@ -432,8 +432,8 @@ QVariantHash ConverterUtil::toSetPasswordHash(const SetPasswordReqParam_S &data)
     QVariantHash oneParam;
     oneParam.insert(KEY_RTUID, data.rtuId);
     oneParam.insert(KEY_CHNID, data.cchId);
-    oneParam.insert(KEY_PASSWD, data.passwd);
-    oneParam.insert(KEY_LOCKNO, data.lockno);
+    //oneParam.insert(KEY_PASSWD, data.passwd);
+    //oneParam.insert(KEY_LOCKNO, data.lockno);
     oneParam.insert(KEY_VALUE, data.value);
     paramList.append(oneParam);
     //dataHash.insert(KEY_DATA, oneParam);
@@ -476,8 +476,8 @@ QVariantHash ConverterUtil::toSubPasswordHash(const SubPasswordParam_S &data)
     QVariantHash oneParam;
     oneParam.insert(KEY_RTUID, data.rtuId);
     oneParam.insert(KEY_CHNID, data.cchId);
-    oneParam.insert(KEY_PASSWD, data.passwd);
-    oneParam.insert(KEY_LOCKNO, data.lockno);
+    //oneParam.insert(KEY_PASSWD, data.passwd);
+    //oneParam.insert(KEY_LOCKNO, data.lockno);
     oneParam.insert(KEY_VALUE, data.value);
     paramList.append(oneParam);
     dataHash.insert(KEY_DATA, oneParam);
@@ -976,9 +976,9 @@ std::shared_ptr<BaseCmdData_S> ConverterUtil::toCmdData(const QString &code, con
         //{
             std::shared_ptr<SetPasswordRegParam_S> setPasswordRegParam = std::make_shared<SetPasswordRegParam_S>();
             QVariantHash oneParam=paramList.toHash();
-            setPasswordRegParam->passwd = oneParam.value(KEY_PASSWD).toInt();
-            setPasswordRegParam->lockno = oneParam.value(KEY_LOCKNO).toInt();
-            setPasswordRegParam->controlNum0x = oneParam.value(KEY_ControlNum0X).toString();
+            //setPasswordRegParam->passwd = oneParam.value(KEY_PASSWD).toInt();
+            //setPasswordRegParam->lockno = oneParam.value(KEY_LOCKNO).toInt();
+            //setPasswordRegParam->controlNum0x = oneParam.value(KEY_ControlNum0X).toString();
             cmdData->param.push_back(setPasswordRegParam);
         //}
         return cmdData;

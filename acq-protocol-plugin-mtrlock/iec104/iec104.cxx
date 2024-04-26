@@ -2734,6 +2734,7 @@ void Iec104::App_RxVarFrame( uint8 *apdu, int size )
     case APPTYPE_ME_ND:
     case APPTYPE_ME_NT11:
     case APPTYPE_ME_FLOAT:
+    case 7:
         App_RxYcFrame( asdu, size );
         break;
     case APPTYPE_CO_NT:
@@ -2766,6 +2767,7 @@ void Iec104::App_RxOtherType(uint8 *appdata, int datalen)
 ********************************************************************************/
 void Iec104::App_RxAllDataConf( uint8 *asdu, int size )
 {
+    LOG_WARN(pRouteInf->GetChnId(),"下发总召请求");
     uint32    infnum = asdu[1]&0x7f;
     int pos = 6;
     
@@ -3050,6 +3052,85 @@ void Iec104::App_RxYcFrame( uint8 *asdu, int size )    //不带品质遥测数�
 
     switch( asdu[0] )
     {
+    //代表密码锁总召上送
+    case 7:
+        if( pRouteInf->GetDebugFlag() )
+        {
+
+            LOG_DEBUG(pRouteInf->GetChnId(), QString::number(std::numeric_limits<int>::max()));
+            for(int k=0;k<8;k++)
+            {
+
+                LOG_DEBUG(pRouteInf->GetChnId(), "------"+QString::number(asdu[k]));
+            }
+
+        }
+        if( seqflag )
+        {
+            ycno = asdu[j+1]*256+asdu[j];
+            if( Config_Param.InfAddrNum == 3 )
+            {
+                ycno += asdu[j+2]*256*256;
+                j += 3;
+            }
+            else
+                j += 2;
+            ycno -= Config_Param.YcBaseAddr;
+
+            std::list<std::shared_ptr<BaseParam_S>> dataList;
+            for( i = 0; i < ycnum; i++, ycno++ )
+            {
+                for(int xx=0;xx<5;xx++)
+                {
+
+                   LOG_DEBUG(pRouteInf->GetChnId(), QString::number(asdu[xx+8+5*i]));
+                }
+
+
+                value = char_to_float((char*)&asdu[j+5*i]);
+                yc_des = asdu[j+4+5*i];
+
+                status = App_YcQcExchange(yc_des);
+
+                if( testbit == 0x80 )
+                {
+                    LOG_DEBUG(pRouteInf->GetChnId(), QString("IEC104\tTESTYC\tChnId=%1\trtuaddr=%2\tYcNo=%3\tYcValue=%4\n").arg(pRouteInf->GetChnId()).arg(rtuaddr).arg(ycno).arg(value));
+                }
+                else
+                {
+                    //pRawDb->PutAYc( rtuaddr, ycno, value, asdu[j+1+3*i]*256+asdu[j+3*i], status );
+                    std::shared_ptr<YCParam_S> data = std::make_shared<YCParam_S>();
+                    data->rtuId = pRouteInf->GetRtuId();//pRtuInf->GetRtuIdByAddr(rtuaddr);
+                    data->no =ycno;
+                    //data->value =value;
+                    data->quality =status;
+                    int password;
+                    int topbuf = asdu[9+5*i] &0x0F;
+                    int ctr = (asdu[9+5*i] &0xF0)/16;
+
+                    password = ((topbuf*256+asdu[9+5*i+1])*256+asdu[9+5*i+2])*256+asdu[9+5*i+3];
+
+
+//                    LOG_DEBUG(pRouteInf->GetChnId(), QString::number(fctr,'f',2));
+//                    LOG_DEBUG(pRouteInf->GetChnId(), QString::number(fctr+password,'f',2));
+//                    LOG_DEBUG(pRouteInf->GetChnId(), "-------------------------------------");
+
+
+                    data->value =password*100+ctr;
+
+                    LOG_DEBUG(pRouteInf->GetChnId(), QString::number(ctr));
+                    LOG_DEBUG(pRouteInf->GetChnId(), QString::number(password));
+                    LOG_DEBUG(pRouteInf->GetChnId(), "-------------------------------------");
+
+
+                    dataList.push_back(data);
+                }
+            }
+            pRawDb->PutYcList(true, dataList);
+
+        }
+    break;
+
     case APPTYPE_ME_FLOAT:
         if( pRouteInf->GetDebugFlag() )
             LOG_DEBUG(pRouteInf->GetChnId(), "IEC104 ycframe: APPTYPE_ME_FLOAT\n");

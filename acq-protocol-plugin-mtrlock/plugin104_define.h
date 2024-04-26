@@ -110,9 +110,9 @@ static const std::string CMD_TYPE_STR_SPRESULT = CODE_SETRSP;//"SetRsp";//设置
 static const std::string CMD_TYPE_STR_CALLDD = CODE_CALLDDREQ;//"CallDDReq";//总召电度（脉冲）
 static const std::string CMD_TYPE_STR_CALLDDEND = CODE_CALLDDRSP;//"CallDDRsp";//总召电度（脉冲）应答（结束）
 
-static const std::string CMD_TYPE_STR_SetPasswordReg = CODE_SetPasswordReg;//"SetPasswordReg";//密码锁下发密码命令
-static const std::string CMD_TYPE_STR_SetPasswordRes = CODE_SetPasswordRes;//"SetPasswordRes";//密码锁下发密码命令反馈
-static const std::string CMD_TYPE_STR_SubPassword = CODE_SubPassword;//"SubPassword";//上送密码锁的密码信息
+static const std::string CMD_TYPE_STR_SetPasswordReg = "SetPasswordReg";//"SetPasswordReg";//密码锁下发密码命令
+static const std::string CMD_TYPE_STR_SetPasswordRes = "SetPasswordRes";//"SetPasswordRes";//密码锁下发密码命令反馈
+static const std::string CMD_TYPE_STR_SubPassword = "SubPassword";//"SubPassword";//上送密码锁的密码信息
 
 //遥控结果, 1:成功； -1：超时；-2：其他原因
 typedef enum
@@ -189,7 +189,7 @@ typedef struct YXParam:public BaseParam_S
 typedef struct YCParam:public BaseParam_S
 {
     int no;//遥测点序号
-    float value;//遥测值
+    double value;//遥测值
     int quality;//质量码，有效位等
     long long time;//SOE时间戳(秒+毫秒，相对于UTC时间)
     YCParam& operator=(const YCParam &data)

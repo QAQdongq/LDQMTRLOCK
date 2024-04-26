@@ -137,7 +137,7 @@ bool Protocol104Plugin::readParameter(const QVariantHash &channelHash)
     m_initData.chnCfg.type = channelHash.value(KEY_TYPE).toInt();
 
     //初始化日志
-    PluginLogHelper::instance()->init(m_cchId, "104", "");
+    PluginLogHelper::instance()->init(m_cchId, "mtrlock", "");
 
     QVariantHash protocolParam = channelHash.value(KEY_PROTOCOLPARAM).toHash();
     m_initData.protocolCfgParam.scanTime = protocolParam.value("scanTime", 60).toInt();//扫描周期
