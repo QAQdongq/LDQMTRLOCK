@@ -822,12 +822,13 @@ int Iec104::App_SendSp(COMMAND *command)
          buf[i++] = (passwd >> 16) & 0xFF; // 获取3字节
          buf[i++] = (passwd >> 8) & 0xFF;  // 获取2字节
          buf[i++] = passwd & 0xFF;// 获取最低字节;
-         LOG_INFO(pRouteInf->GetChnId(), "lalala"+QString::number(i));
-         for(int xx=0;xx<i;xx++)
-         {
-             LOG_INFO(pRouteInf->GetChnId(), QString::number(buf[i]));
+         //调试
+//         LOG_INFO(pRouteInf->GetChnId(), "lalala"+QString::number(i));
+//         for(int xx=0;xx<i;xx++)
+//         {
+//             LOG_INFO(pRouteInf->GetChnId(), QString::number(buf[i]));
 
-         }
+//         }
 
 
 //        if(data->strValue.size() != 4)
@@ -2445,7 +2446,7 @@ void Iec104::App_RxMtrLockSetPasswordResFrame( uint8 *apdu, int size )
     data.cchId =pRouteInf->GetChnId();
    //data.passwd = 123456;
    // data.lockno =2955;
-    //data.message= "lalala";
+    //data.message= "";
     pRawDb->SendSetPassword(data);//上送遥控命令到智能分析应用
 
 
@@ -2483,7 +2484,7 @@ void Iec104::App_RxMtrLockSubPasswordFrame( uint8 *apdu, int size )
     data.cchId =pRouteInf->GetChnId();
    //data.passwd = 123456;
    // data.lockno =2955;
-    //data.message= "lalala";
+    //data.message= "";
     pRawDb->SendSubPassword(data);//上送遥控命令到智能分析应用
 
 
@@ -2727,7 +2728,6 @@ void Iec104::App_RxVarFrame( uint8 *apdu, int size )
     case APPTYPE_SP_WT30:
     case APPTYPE_DP_WT31:
         App_RxSoeFrame( asdu, size );
-        LOG_DEBUG(pRouteInf->GetChnId(),"lalalala1------------");
         break;
     case APPTYPE_ME_NT:
     case APPTYPE_ME_WT:
@@ -2767,7 +2767,6 @@ void Iec104::App_RxOtherType(uint8 *appdata, int datalen)
 ********************************************************************************/
 void Iec104::App_RxAllDataConf( uint8 *asdu, int size )
 {
-    LOG_WARN(pRouteInf->GetChnId(),"下发总召请求");
     uint32    infnum = asdu[1]&0x7f;
     int pos = 6;
     
@@ -3056,13 +3055,14 @@ void Iec104::App_RxYcFrame( uint8 *asdu, int size )    //不带品质遥测数�
     case 7:
         if( pRouteInf->GetDebugFlag() )
         {
+            LOG_DEBUG(pRouteInf->GetChnId(), "IEC104 ycframe: mtrlock callAll\n");
+            //调试日志
+//            LOG_DEBUG(pRouteInf->GetChnId(), QString::number(std::numeric_limits<int>::max()));
+//            for(int k=0;k<8;k++)
+//            {
 
-            LOG_DEBUG(pRouteInf->GetChnId(), QString::number(std::numeric_limits<int>::max()));
-            for(int k=0;k<8;k++)
-            {
-
-                LOG_DEBUG(pRouteInf->GetChnId(), "------"+QString::number(asdu[k]));
-            }
+//                LOG_DEBUG(pRouteInf->GetChnId(), "------"+QString::number(asdu[k]));
+//            }
 
         }
         if( seqflag )
@@ -3080,11 +3080,12 @@ void Iec104::App_RxYcFrame( uint8 *asdu, int size )    //不带品质遥测数�
             std::list<std::shared_ptr<BaseParam_S>> dataList;
             for( i = 0; i < ycnum; i++, ycno++ )
             {
-                for(int xx=0;xx<5;xx++)
-                {
+                //调试日志
+//                for(int xx=0;xx<5;xx++)
+//                {
 
-                   LOG_DEBUG(pRouteInf->GetChnId(), QString::number(asdu[xx+8+5*i]));
-                }
+//                   LOG_DEBUG(pRouteInf->GetChnId(), QString::number(asdu[xx+8+5*i]));
+//                }
 
 
                 value = char_to_float((char*)&asdu[j+5*i]);
@@ -3109,18 +3110,12 @@ void Iec104::App_RxYcFrame( uint8 *asdu, int size )    //不带品质遥测数�
                     int ctr = (asdu[9+5*i] &0xF0)/16;
 
                     password = ((topbuf*256+asdu[9+5*i+1])*256+asdu[9+5*i+2])*256+asdu[9+5*i+3];
-
-
-//                    LOG_DEBUG(pRouteInf->GetChnId(), QString::number(fctr,'f',2));
-//                    LOG_DEBUG(pRouteInf->GetChnId(), QString::number(fctr+password,'f',2));
-//                    LOG_DEBUG(pRouteInf->GetChnId(), "-------------------------------------");
-
-
                     data->value =password*100+ctr;
 
-                    LOG_DEBUG(pRouteInf->GetChnId(), QString::number(ctr));
-                    LOG_DEBUG(pRouteInf->GetChnId(), QString::number(password));
-                    LOG_DEBUG(pRouteInf->GetChnId(), "-------------------------------------");
+                    //调试日志
+//                    LOG_DEBUG(pRouteInf->GetChnId(), QString::number(ctr));
+//                    LOG_DEBUG(pRouteInf->GetChnId(), QString::number(password));
+//                    LOG_DEBUG(pRouteInf->GetChnId(), "-------------------------------------");
 
 
                     dataList.push_back(data);
@@ -4614,6 +4609,7 @@ void Iec104::App_RxYxFrame( uint8 *asdu, int size )
 ********************************************************************************/
 void Iec104::App_RxSPConf( uint8 *asdu, int size )
 {
+    //调试
 //    for(int xx = 0;xx<size;xx++)
 //    {
 //        // 将十六进制值转换为字符串
@@ -4732,7 +4728,7 @@ void Iec104::App_RxSPConf( uint8 *asdu, int size )
 //                else if(App_Layer.CtrlType == CTRL_FUNC_EXECUTE)
 //                {
 //                    App_Layer.CtrlReply = COMMAND_YKEXEC_FAIL;
-//                    LOG_DEBUG(pRouteInf->GetChnId(),"lalalala2------------应用层处理设点确认帧");
+//                    LOG_DEBUG(pRouteInf->GetChnId(),"------------应用层处理设点确认帧");
 //                }
 //                else if( App_Layer.CtrlType == CTRL_FUNC_CANCEL)
 //                {
