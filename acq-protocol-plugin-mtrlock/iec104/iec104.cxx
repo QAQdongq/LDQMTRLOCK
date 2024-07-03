@@ -3055,17 +3055,18 @@ void Iec104::App_RxYcFrame( uint8 *asdu, int size )    //不带品质遥测数�
     case 7:
         if( pRouteInf->GetDebugFlag() )
         {
-            LOG_DEBUG(pRouteInf->GetChnId(), "IEC104 ycframe: mtrlock callAll\n");
+            LOG_INFO(pRouteInf->GetChnId(), "IEC104 ycframe: mtrlock callAll\n");
             //调试日志
-//            LOG_DEBUG(pRouteInf->GetChnId(), QString::number(std::numeric_limits<int>::max()));
-//            for(int k=0;k<8;k++)
-//            {
+            //            LOG_DEBUG(pRouteInf->GetChnId(), QString::number(std::numeric_limits<int>::max()));
+            //            for(int k=0;k<8;k++)
+            //            {
 
-//                LOG_DEBUG(pRouteInf->GetChnId(), "------"+QString::number(asdu[k]));
-//            }
+            //                LOG_INFO(pRouteInf->GetChnId(), QString::number(k)+"------"+QString::number(asdu[k]));
+            //            }
 
         }
-        if( seqflag )
+        LOG_DEBUG(pRouteInf->GetChnId(),"seqflag:"+QString::number(seqflag) );
+        if( seqflag )//代表总召
         {
             ycno = asdu[j+1]*256+asdu[j];
             if( Config_Param.InfAddrNum == 3 )
@@ -3123,6 +3124,54 @@ void Iec104::App_RxYcFrame( uint8 *asdu, int size )    //不带品质遥测数�
             }
             pRawDb->PutYcList(true, dataList);
 
+        }
+        else//单个yc上送
+        {
+            int length = 7,pos;
+            if( Config_Param.InfAddrNum == 3 )
+                length++;
+
+            std::list<std::shared_ptr<BaseParam_S>> dataList;
+            for( i = 0; i < ycnum; i++ )
+            {
+                pos = 2;
+                ycno = asdu[j+1+length*i]*256+asdu[j+length*i];
+                if( Config_Param.InfAddrNum == 3 )
+                {
+                    ycno += asdu[j+2+length*i]*256*256;
+                    pos = 3;
+                }
+
+                ycno -= Config_Param.YcBaseAddr;
+
+                value = char_to_float((char*)&asdu[j+pos+length*i]);
+
+                yc_des = asdu[j+pos+4+length*i];
+
+                status = App_YcQcExchange(yc_des);
+
+                if( testbit == 0x80 )
+                {
+                    LOG_DEBUG(pRouteInf->GetChnId(), QString("IEC104\tTESTYC\tChnId=%1\trtuaddr=%2\tYcNo=%3\tYcValue=%4\n ").arg(pRouteInf->GetChnId()).arg(rtuaddr).arg(ycno).arg(value));
+                }
+                else
+                {
+                    //pRawDb->PutAYc( rtuaddr, ycno, value, asdu[j+pos+1+length*i]*256+asdu[j+pos+length*i], status );
+                    std::shared_ptr<YCParam_S> data = std::make_shared<YCParam_S>();
+                    data->rtuId = pRouteInf->GetRtuId();//pRtuInf->GetRtuIdByAddr(rtuaddr);
+                    data->no =ycno;
+                    int password;
+                    int topbuf = asdu[9+5*i] &0x0F;
+                    int ctr = (asdu[9+5*i] &0xF0)/16;
+
+                    password = ((topbuf*256+asdu[9+5*i+1])*256+asdu[9+5*i+2])*256+asdu[9+5*i+3];
+                    data->value =password*100+ctr;
+                    data->quality =status;
+                    LOG_INFO(pRouteInf->GetChnId(), QString("mrtlock单个yc上送--\\tChnId=%1\trtuaddr=%2\tYcNo=%3\tYcValue=%4\n ").arg(pRouteInf->GetChnId()).arg(rtuaddr).arg(ycno).arg(password));
+                    dataList.push_back(data);
+                }
+            }
+            pRawDb->PutYcList(isCycCallAll, dataList);
         }
     break;
 
